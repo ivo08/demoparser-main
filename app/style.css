@@ -1,0 +1,61 @@
+body { margin:0; font-family:Arial, sans-serif; background:#1e1e24; color:#eee; }
+header { padding:10px 14px; background:#282832; display:flex; flex-direction:column; gap:8px; }
+.controls { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+button, select, input[type=range] { background:#333; color:#eee; border:1px solid #444; padding:4px 8px; border-radius:4px; }
+button:disabled { opacity:.4; }
+canvas { background:#101015; border:1px solid #444; display:block; margin:12px auto; box-shadow:0 0 8px #000; }
+.playerLabel { position:absolute; font-size:10px; transform:translate(-50%, -140%); white-space:nowrap; }
+
+/* Simple loading spinner */
+.spinner {
+	width: 14px;
+	height: 14px;
+	border: 2px solid rgba(255,255,255,0.2);
+	border-top-color: #ddd;
+	border-radius: 50%;
+	margin-left: 6px;
+	display: inline-block;
+	animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
+/* Progress bar */
+.progress { display:flex; }
+.progressBar {
+	width: 160px;
+	height: 10px;
+	border: 1px solid #444;
+	background: #222;
+	border-radius: 4px;
+	overflow: hidden;
+}
+.progressFill {
+	height: 100%;
+	background: linear-gradient(90deg, #4caf50, #81c784);
+	width: 0%;
+	transition: width .2s ease;
+}
+
+/* Map background wrapper */
+#mapWrap {
+	background-size: cover;
+	background-position: center center;
+	background-repeat: no-repeat;
+	padding: 12px 0;
+}
+
+/* Optional overlay label */
+#mapLabel {
+	position: absolute;
+	left: 16px;
+	top: 12px;
+	color: #ccc;
+	font-size: 12px;
+	background: rgba(0,0,0,0.35);
+	padding: 4px 8px;
+	border-radius: 4px;
+}

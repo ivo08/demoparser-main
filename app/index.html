@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Round Movement Viewer</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>Round Movement Viewer</h1>
+    <div class="controls">
+      <select id="demoList" title="Demos disponíveis no servidor"></select>
+      <button id="loadDemoBtn" type="button" title="Processar demo selecionada no servidor">Processar Demo</button>
+      <input type="number" id="tickSample" min="1" value="1" style="width:80px" title="every_n ticks para .dem" />
+      <div id="progressWrap" class="progress" style="display:none; align-items:center; gap:8px; min-width:220px;">
+        <div class="progressBar"><div class="progressFill" id="progressFill" style="width:0%"></div></div>
+        <span id="progressText" style="color:#aaa; font-size:12px"></span>
+      </div>
+      <select id="roundSelect"></select>
+      <button id="playBtn">Play</button>
+      <button id="pauseBtn" disabled>Pause</button>
+      <input type="range" id="timeSlider" min="0" max="0" value="0">
+      <span id="tickLabel">Tick: 0</span>
+      <span id="statusMsg" style="margin-left:8px;color:#aaa"></span>
+      <span id="loadingSpinner" class="spinner" aria-hidden="true" style="display:none"></span>
+    </div>
+  </header>
+  <main>
+    <div id="mapWrap" style="width:100%;display:flex;justify-content:center;">
+      <canvas id="field" width="900" height="600"></canvas>
+    </div>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
