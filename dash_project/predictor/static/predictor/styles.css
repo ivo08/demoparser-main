@@ -1,0 +1,159 @@
+body {
+  background: #0e1012;
+  color: #eaeaea;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+main.container {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+}
+h1,
+h2,
+h3 {
+  text-align: center;
+  color: #00b7ff;
+}
+
+.teams {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  justify-content: space-between;
+}
+.team {
+  flex: 1 1 48%;
+  background: #181b1f;
+  padding: 16px;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.player-card {
+  border-bottom: 1px solid #2a2f36;
+  padding: 12px 0;
+}
+
+.player-input {
+  width: 100%;
+  background: #1f2328;
+  border: 1px solid #333;
+  border-radius: 6px;
+  color: #fff;
+  padding: 6px 8px;
+  margin-bottom: 8px;
+}
+
+/* NOVO: Layout compacto dentro do player-card */
+.equipment-layout-compact {
+    display: flex;
+    flex-direction: row; 
+    flex-wrap: wrap;
+    gap: 8px; /* Espaço entre as colunas/secções */
+}
+
+/* NOVO: Secção de Armas (Primárias + Secundárias) */
+.weapons-group {
+    flex: 2; /* Ocupa mais espaço */
+    min-width: 55%; 
+}
+
+/* NOVO: Secção de Granadas e Equipamento */
+.util-equip-group {
+    flex: 1; /* Ocupa menos espaço */
+    min-width: 40%; 
+}
+
+/* NOVO: Títulos pequenos para guiar */
+.weapon-group-title {
+    font-size: 0.8em;
+    color: #888;
+    margin-bottom: 4px;
+    border-bottom: 1px dashed #2a2f36;
+    padding-bottom: 2px;
+}
+/* FIM NOVO CSS DE LAYOUT */
+
+
+/* ALTERADO: Redução do tamanho e espaçamento dos ícones */
+.weapon-grid,
+.grenade-grid,
+.equipment-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px; /* Reduzido de 6px para 4px */
+  margin-bottom: 6px; /* Reduzido de 8px para 6px */
+  max-width: 100%; 
+}
+
+.weapon-icon {
+  width: 40px; /* Reduzido de 48px para 40px */
+  height: 40px; /* Reduzido de 48px para 40px */
+  border: 2px solid transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.2s;
+  background: #1a1d21;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0; 
+}
+.weapon-icon img {
+  width: 75%; /* Ajustado para ícones menores */
+  height: 75%; /* Ajustado para ícones menores */
+  object-fit: contain;
+  filter: brightness(0.9);
+}
+.weapon-icon:hover {
+  transform: scale(1.1);
+}
+.weapon-icon.selected {
+  border-color: #00b7ff;
+  box-shadow: 0 0 8px #00b7ff;
+}
+
+.actions {
+  text-align: center;
+  margin-top: 24px;
+}
+.actions button {
+  background: #00b7ff;
+  border: none;
+  color: #fff;
+  font-size: 1.1em;
+  padding: 10px 24px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.actions button:hover {
+  background: #0095d4;
+}
+
+#chart {
+  margin-top: 20px;
+}
+.bar {
+  height: 30px;
+  border-radius: 8px;
+  margin: 6px 0;
+  text-align: center;
+  color: #fff;
+  line-height: 30px;
+}
+.bar.ct {
+  background: #007bff;
+}
+.bar.t {
+  background: #ff4d00;
+}
+
+.result {
+  background: #181b1f;
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 24px;
+}

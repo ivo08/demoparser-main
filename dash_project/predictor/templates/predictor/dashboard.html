@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %} {% load replace_space_with_underscore %}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Predictor Dashboard</title>
+    <link rel="stylesheet" href="{% static 'predictor/styles.css' %}" />
+    <script>
+      const WEAPON_MAP = {{ weapon_map_json|safe }};
+    </script>
+    <script src="{% static 'predictor/dashboard.js' %}"></script>
+  </head>
+  <body>
+    <main class="container">
+      <h1>Round Predictor</h1>
+
+      <form id="predict-form">
+        <section class="teams">
+          <div class="team">
+            <h2>Team CT</h2>
+            <div class="players">
+              {% for i in player_slots %}
+              <div class="player-card">
+                <input
+                  type="text"
+                  name="ct_player_{{ forloop.counter0 }}"
+                  placeholder="steamid or name"
+                  class="player-input"
+                />
+
+                <div class="equipment-layout-compact">
+                  
+                  <div class="weapons-group">
+                    <h4 class="weapon-group-title">Primárias</h4>
+                    <div class="weapon-grid primary">
+                      {% for w in primary_options %}
+                      <div
+                        class="weapon-icon"
+                        data-team="ct"
+                        data-type="primary"
+                        data-slot="{{ forloop.parentloop.counter0 }}"
+                        data-name="{{ w }}"
+                      >
+                        <img src="{% static "predictor/img/weapons/" %}{{w|lower|replace_space_with_underscore }}.png" alt="{{ w }}">
+                      </div>
+                      {% endfor %}
+                    </div>
+
+                    <h4 class="weapon-group-title">Secundárias</h4>
+                    <div class="weapon-grid secondary">
+                      {% for w in secondary_options %}
+                      <div
+                        class="weapon-icon"
+                        data-team="ct"
+                        data-type="secondary"
+                        data-slot="{{ forloop.parentloop.counter0 }}"
+                        data-name="{{ w }}"
+                      >
+                        <img src="{% static "predictor/img/weapons/" %}{{w|lower|replace_space_with_underscore }}.png" alt="{{ w }}">
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  
+                  <div class="util-equip-group">
+                    <h4 class="weapon-group-title">Granadas</h4>
+                    <div class="grenade-grid">
+                      {% for g in grenade_options %}
+                      <div
+                        class="weapon-icon grenade"
+                        data-team="ct"
+                        data-type="grenade"
+                        data-slot="{{ forloop.parentloop.counter0 }}"
+                        data-name="{{ g }}"
+                      >
+                        <img src="{% static "predictor/img/weapons/" %}{{g|lower|replace_space_with_underscore }}.png" alt="{{ g }}">
+                      </div>
+                      {% endfor %}
+                    </div>
+
+                    <h4 class="weapon-group-title">Equipamento</h4>
+                    <div class="equipment-grid">
+                      {% for e in equipment_options %}
+                      <div
+                        class="weapon-icon equipment"
+                        data-team="ct"
+                        data-type="equipment"
+                        data-slot="{{ forloop.parentloop.counter0 }}"
+                        data-name="{{ e }}"
+                      >
+                        <img src="{% static "predictor/img/weapons/" %}{{e|lower|replace_space_with_underscore }}.png" alt="{{ e }}">
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  
+                </div>
+                <input
+                  type="hidden"
+                  name="ct_primary_{{ forloop.counter0 }}"
+                  value=""
+                />
+                <input
+                  type="hidden"
+                  name="ct_secondary_{{ forloop.counter0 }}"
+                  value=""
+                />
+                <input
+                  type="hidden"
+                  name="ct_grenades_{{ forloop.counter0 }}"
+                  value=""
+                />
+                <input
+                  type="hidden"
+                  name="ct_equipment_{{ forloop.counter0 }}"
+                  value=""
+                />
+              </div>
+              {% endfor %}
+            </div>
+            <div>Equip preview: <span id="ct-equip">0</span></div>
+          </div>
+
+          <div class="team">
+            <h2>Team T</h2>
+            <div class="players">
+              {% for i in player_slots %}
+              <div class="player-card">
+                <input
+                  type="text"
+                  name="t_player_{{ forloop.counter0 }}"
+                  placeholder="steamid or name"
+                  class="player-input"
+                />
+
+                <div class="equipment-layout-compact">
+                  
+                  <div class="weapons-group">
+                    <h4 class="weapon-group-title">Primárias</h4>
+                    <div class="weapon-grid primary">
+                      {% for w in primary_options %}
+                      <div
+                        class="weapon-icon"
+                        data-team="t"
+                        data-type="primary"
+                        data-slot="{{ forloop.parentloop.counter0 }}"
+                        data-name="{{ w }}"
+                      >
+                        <img src="{% static "predictor/img/weapons/" %}{{w|lower|replace_space_with_underscore }}.png" alt="{{ w }}">
+                      </div>
+                      {% endfor %}
+                    </div>
+
+                    <h4 class="weapon-group-title">Secundárias</h4>
+                    <div class="weapon-grid secondary">
+                      {% for w in secondary_options %}
+                      <div
+                        class="weapon-icon"
+                        data-team="t"
+                        data-type="secondary"
+                        data-slot="{{ forloop.parentloop.counter0 }}"
+                        data-name="{{ w }}"
+                      >
+                        <img src="{% static "predictor/img/weapons/" %}{{w|lower|replace_space_with_underscore }}.png" alt="{{ w }}">
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+
+                  <div class="util-equip-group">
+                    <h4 class="weapon-group-title">Granadas</h4>
+                    <div class="grenade-grid">
+                      {% for g in grenade_options %}
+                      <div
+                        class="weapon-icon grenade"
+                        data-team="t"
+                        data-type="grenade"
+                        data-slot="{{ forloop.parentloop.counter0 }}"
+                        data-name="{{ g }}"
+                      >
+                        <img src="{% static "predictor/img/weapons/" %}{{g|lower|replace_space_with_underscore }}.png" alt="{{ g }}">
+                      </div>
+                      {% endfor %}
+                    </div>
+
+                    <h4 class="weapon-group-title">Equipamento</h4>
+                    <div class="equipment-grid">
+                      {% for e in equipment_options %}
+                      <div
+                        class="weapon-icon equipment"
+                        data-team="t"
+                        data-type="equipment"
+                        data-slot="{{ forloop.parentloop.counter0 }}"
+                        data-name="{{ e }}"
+                      >
+                        <img src="{% static "predictor/img/weapons/" %}{{e|lower|replace_space_with_underscore }}.png" alt="{{ e }}">
+                      </div>
+                      {% endfor %}
+                    </div>
+                  </div>
+                  
+                </div>
+                <input
+                  type="hidden"
+                  name="t_primary_{{ forloop.counter0 }}"
+                  value=""
+                />
+                <input
+                  type="hidden"
+                  name="t_secondary_{{ forloop.counter0 }}"
+                  value=""
+                />
+                <input
+                  type="hidden"
+                  name="t_grenades_{{ forloop.counter0 }}"
+                  value=""
+                />
+                <input
+                  type="hidden"
+                  name="t_equipment_{{ forloop.counter0 }}"
+                  value=""
+                />
+              </div>
+              {% endfor %}
+            </div>
+            <div>Equip preview: <span id="t-equip">0</span></div>
+          </div>
+        </section>
+
+        <div class="actions">
+          <button type="submit">Predict</button>
+        </div>
+      </form>
+
+      <section id="result" class="result">
+        <h3>Prediction</h3>
+        <div id="chart">
+          <div class="bar ct" style="width: 0%">
+            <span id="ct-label"></span>
+          </div>
+          <div class="bar t" style="width: 0%"><span id="t-label"></span></div>
+        </div>
+        <pre id="raw-result"></pre>
+      </section>
+    </main>
+  </body>
+</html>

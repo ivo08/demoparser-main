@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Prediction History</title>
+    <link rel="stylesheet" href="/static/predictor/styles.css">
+  </head>
+  <body>
+    <main class="container">
+      <h1>Prediction History</h1>
+      <a href="/">Back to dashboard</a>
+      <ul>
+        {% for r in history %}
+        <li>
+          <strong>{{ r.timestamp|date:'Y-m-d H:i:s' }}</strong>
+          <pre>{{ r|safe }}</pre>
+        </li>
+        {% empty %}
+        <li>No history yet.</li>
+        {% endfor %}
+      </ul>
+    </main>
+  </body>
+</html>
