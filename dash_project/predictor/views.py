@@ -10,36 +10,58 @@ import joblib
 import numpy as np
 
 import backend.constants as constants
+import pandas as pd
 
 # Locate model and players file relative to repo root
 BASE_REPO = Path(__file__).resolve().parents[2]
 MODEL_PATH = BASE_REPO / 'model' / 'round_winner_model.pkl'
-PLAYERS_PATH = BASE_REPO / 'model' / 'all_players.pkl'
+MODEL_PLAYERS_PATH = BASE_REPO / 'model' / 'all_players.pkl'
+PLAYERS_PATH = BASE_REPO / 'dash_project' / 'predictor' / 'data' / 'players.json'
+MAPS_NAMES_PATH = BASE_REPO / 'model' / 'maps_names.pkl'
 HISTORY_FILE = BASE_REPO / 'data' / 'predictions_history.json'
 
 # Load model and players lazily
 _MODEL = None
+_MODEL_PLAYERS = None
 _ALL_PLAYERS = None
+_MAPS_NAMES = None
+
 
 def _load_model():
-    global _MODEL, _ALL_PLAYERS
-    if _MODEL is None:
+    global _MODEL
+    if not _MODEL:
         if MODEL_PATH.exists():
             _MODEL = joblib.load(MODEL_PATH)
         else:
             _MODEL = None
-    if _ALL_PLAYERS is None:
-        if PLAYERS_PATH.exists():
-            _ALL_PLAYERS = joblib.load(PLAYERS_PATH)
-        else:
-            _ALL_PLAYERS = []
+
+def _load_model_players():
+    global _MODEL_PLAYERS
+    if not _MODEL_PLAYERS and MODEL_PLAYERS_PATH.exists():
+        with open(MODEL_PLAYERS_PATH, 'r') as f:
+            _MODEL_PLAYERS = joblib.load(MODEL_PLAYERS_PATH)
+
+def _load_players():
+    global _ALL_PLAYERS
+    if not _ALL_PLAYERS and PLAYERS_PATH.exists():
+        with open(PLAYERS_PATH, 'r') as f:
+            _ALL_PLAYERS = json.load(f)
+
+def _load_maps_names():
+    global _MAPS_NAMES
+    if not _MAPS_NAMES and MAPS_NAMES_PATH.exists():
+        with open(MAPS_NAMES_PATH, 'r') as f:
+            _MAPS_NAMES = joblib.load(MAPS_NAMES_PATH)
+            
 
 def dashboard(request):
     # Provide weapon list and players list for initial rendering
     _load_model()
+    _load_players()
     weapons = sorted(list(constants.WEAPON_VALUES.keys()))
     import json as _json
     weapon_map_json = _json.dumps(constants.WEAPON_VALUES)
+    all_players_json = _json.dumps(_ALL_PLAYERS)
     # provide categorized options per player: primaries, secondaries, grenades
     primary_options = constants.WEAPON_VALUES['primary_weapons'].keys()
     secondary_options = constants.WEAPON_VALUES['secondary_weapons'].keys()
@@ -47,7 +69,7 @@ def dashboard(request):
     equipment_options = constants.WEAPON_VALUES['equipment'].keys()
     return render(request, 'predictor/dashboard.html', context={
         'weapons': weapons,
-        'all_players': _ALL_PLAYERS,
+        'all_players_json': _ALL_PLAYERS,
         'weapon_map_json': weapon_map_json,
         'player_slots': range(5),
         'primary_options': primary_options,
@@ -56,17 +78,48 @@ def dashboard(request):
         'equipment_options': equipment_options,
     })
 
+
 def _ensure_history_dir():
     HISTORY_FILE.parent.mkdir(parents=True, exist_ok=True)
     if not HISTORY_FILE.exists():
         with open(HISTORY_FILE, 'w') as f:
             json.dump([], f)
 
+
 def history_view(request):
     _ensure_history_dir()
     with open(HISTORY_FILE, 'r') as f:
         data = json.load(f)
     return render(request, 'predictor/history.html', context={'history': data})
+
+def _calculate_players_columns(ct_players, t_players):
+    # Create player columns from all_players list
+    all_players = list(_MODEL_PLAYERS) if _MODEL_PLAYERS is not None else []
+    player_cols = [f'player_{p}' for p in all_players]
+
+    # Initialize row with zeros
+    row = {c: 0 for c in player_cols}
+
+    # Mark CT players as 1, T players as 2
+    for p in ct_players:
+        col = f'player_{p}'
+        if col in row:
+            row[col] = 2
+    for p in t_players:
+        col = f'player_{p}'
+        if col in row:
+            row[col] = 3
+    return row, player_cols
+
+def _calculate_maps_columns(default_maps_names: list, map: str):
+    # Create one hot encoded map columns
+    maps_cols = [m for m in default_maps_names]
+    row = {c: False for c in maps_cols}
+    for m in default_maps_names:
+        if m in map:
+            row[m] = True
+            break
+    return row, maps_cols
 
 @csrf_exempt
 def api_predict(request):
@@ -77,125 +130,54 @@ def api_predict(request):
     except Exception:
         return HttpResponseBadRequest('Invalid JSON')
 
-    # Expected payload keys
-    team_ct_players = payload.get('team_ct_players', [])
-    team_t_players = payload.get('team_t_players', [])
+    # Get current equip value for both teams
+    team_ct_current_equip_value = payload.get('team_ct_current_equip_value', 0)
+    team_t_current_equip_value = payload.get('team_t_current_equip_value', 0)
+    map = payload.get('map', 'de_nuke')
 
-    # New structured per-player fields: primaries, secondaries, grenades (list per player)
-    team_ct_primaries = payload.get('team_ct_player_primaries', [])
-    team_ct_secondaries = payload.get('team_ct_player_secondaries', [])
-    team_ct_grenades = payload.get('team_ct_player_grenades', [])
+    if '\xa0' in team_ct_current_equip_value or '\xa0' in team_t_current_equip_value:
+        team_ct_current_equip_value = team_ct_current_equip_value.replace('\xa0', '')
+        team_t_current_equip_value = team_t_current_equip_value.replace('\xa0', '')
 
-    team_t_primaries = payload.get('team_t_player_primaries', [])
-    team_t_secondaries = payload.get('team_t_player_secondaries', [])
-    team_t_grenades = payload.get('team_t_player_grenades', [])
-
-    # Backwards compatibility: single list per player (legacy key)
-    team_ct_player_weapons = payload.get('team_ct_player_weapons', None)
-    team_t_player_weapons = payload.get('team_t_player_weapons', None)
+    # Get team players for both teams
+    team_ct_players = payload.get('ct_team_players', [])
+    team_t_players = payload.get('t_team_players', [])
 
     # Basic validation
     if len(team_ct_players) != 5 or len(team_t_players) != 5:
         return HttpResponseBadRequest('Expected 5 players per team')
 
     _load_model()
+    _load_model_players()
+    _load_maps_names()
     if _MODEL is None:
         return JsonResponse({'error': 'Model not found on server'}, status=500)
 
     # Build feature vector compatible with training encoding
     # Create player columns from all_players list
-    all_players = list(_ALL_PLAYERS) if _ALL_PLAYERS is not None else []
-    player_cols = [f'player_{p}' for p in all_players]
-
-    # Initialize row with zeros
-    row = {c: 0 for c in player_cols}
-
-    # Mark CT players as 1, T players as 2
-    for p in team_ct_players:
-        col = f'player_{p}'
-        if col in row:
-            row[col] = 1
-    for p in team_t_players:
-        col = f'player_{p}'
-        if col in row:
-            row[col] = 2
-
-    # Compute equipment value per team using selected weapons
-    def compute_equip_from_lists(primaries, secondaries, grenades, legacy_list=None):
-        total = 0
-        # legacy list (flat list of weapons per player)
-        if legacy_list:
-            for w in legacy_list:
-                if not w:
-                    continue
-                total += int(constants.WEAPON_VALUES.get(w, 0))
-            return total
-
-        for w in (primaries or []):
-            if w:
-                total += int(constants.WEAPON_VALUES.get(w, 0))
-        for w in (secondaries or []):
-            if w:
-                total += int(constants.WEAPON_VALUES.get(w, 0))
-        for grp in (grenades or []):
-            if isinstance(grp, (list, tuple)):
-                for g in grp:
-                    if g:
-                        total += int(constants.WEAPON_VALUES.get(g, 0))
-        return total
-
-    ct_equip = compute_equip_from_lists(team_ct_primaries, team_ct_secondaries, team_ct_grenades, team_ct_player_weapons)
-    tt_equip = compute_equip_from_lists(team_t_primaries, team_t_secondaries, team_t_grenades, team_t_player_weapons)
-
-    row['team_ct_current_equip_value'] = ct_equip
-    row['team_t_current_equip_value'] = tt_equip
+    players_row, player_cols = _calculate_players_columns(team_ct_players, team_t_players)
+    maps_row, maps_cols = _calculate_maps_columns(_MAPS_NAMES, map)
+    row = maps_row | players_row
 
     # Prepare X in proper column order expected by model
     # Many models expect the same columns as training; we'll order player cols then the two equip cols
-    X_cols = player_cols + ['team_ct_current_equip_value', 'team_t_current_equip_value']
+    X_cols = maps_cols + ['team_ct_current_equip_value', 'team_t_current_equip_value', 'round'] + player_cols
     X = np.array([[row.get(c, 0) for c in X_cols]])
 
-    # Predict
-    try:
-        probs = _MODEL.predict_proba(X)[0]
-        classes = list(_MODEL.classes_)
-        # map classes to labels
-        class_map = {c: constants.STATUS_MAP.get(c, str(c)) for c in classes}
-        result = {class_map[c]: float(probs[i]) for i, c in enumerate(classes)}
-        pred_idx = int(_MODEL.predict(X)[0])
-        pred_label = constants.STATUS_MAP.get(pred_idx, str(pred_idx))
-    except Exception as e:
-        return JsonResponse({'error': f'Prediction error: {str(e)}'}, status=500)
+   # Create pandas dataframe from X
+    df = pd.DataFrame(X, columns=X_cols)
+    df['team_ct_current_equip_value'] = team_ct_current_equip_value
+    df['team_t_current_equip_value'] = team_t_current_equip_value
+    df['round'] = 1
+    
+    # Get predictions
+    preds = _MODEL.predict(df)
+    probs = _MODEL.predict_proba(df)
+    print(f"Predictions: {preds}")
+    print(f"Probabilities: {probs}")
 
-    # Save history record
-    record = {
-        'timestamp': int(time.time()),
-        'input': {
-            'team_ct_players': team_ct_players,
-            'team_t_players': team_t_players,
-            'team_ct_player_weapons': team_ct_player_weapons,
-            'team_t_player_weapons': team_t_player_weapons,
-            'team_ct_equip': ct_equip,
-            'team_t_equip': tt_equip,
-        },
-        'output': {
-            'probabilities': result,
-            'prediction': pred_label,
-        }
-    }
-    try:
-        _ensure_history_dir()
-        with open(HISTORY_FILE, 'r+') as f:
-            try:
-                data = json.load(f)
-            except Exception:
-                data = []
-            data.append(record)
-            f.seek(0)
-            json.dump(data, f, indent=2)
-            f.truncate()
-    except Exception:
-        # non-fatal
-        pass
-
-    return JsonResponse({'prediction': pred_label, 'probabilities': result, 'team_ct_equip': ct_equip, 'team_t_equip': tt_equip})
+    # Serialize to JSON for frontend
+    return JsonResponse({
+        'prediction': preds.tolist(),
+        'probabilities': probs.tolist(), # 2 T; 3 CT
+    })

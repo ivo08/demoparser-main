@@ -8,32 +8,61 @@ body {
 main.container {
   max-width: 1100px;
   margin: auto;
-  padding: 20px;
+  padding: 10px; /* Ultra compacto */
 }
 h1,
 h2,
 h3 {
   text-align: center;
   color: #00b7ff;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+/* NOVO: Estilos para o Seletor de Equipa */
+.team-selector-controls {
+    text-align: center;
+    margin-bottom: 15px; /* Reduzido */
+    padding: 10px;
+    background: #181b1f;
+    border-radius: 12px;
+}
+.team-selectors {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* Reduzido */
+    margin-top: 10px;
+}
+.team-selector-controls select {
+    padding: 6px 10px; /* Reduzido */
+    border-radius: 6px;
+    border: 1px solid #333;
+    background: #1f2328;
+    color: #fff;
+    font-size: 0.9em; /* Reduzido */
+    cursor: pointer;
 }
 
 .teams {
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 16px; 
   justify-content: space-between;
 }
 .team {
   flex: 1 1 48%;
   background: #181b1f;
-  padding: 16px;
+  padding: 10px; /* Ultra compacto */
   border-radius: 12px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .player-card {
   border-bottom: 1px solid #2a2f36;
-  padding: 12px 0;
+  padding: 6px 0; /* Ultra compacto */
+}
+.player-card:last-child {
+    border-bottom: none;
 }
 
 .player-input {
@@ -42,57 +71,59 @@ h3 {
   border: 1px solid #333;
   border-radius: 6px;
   color: #fff;
-  padding: 6px 8px;
-  margin-bottom: 8px;
+  padding: 3px 5px; /* Ultra compacto */
+  margin-bottom: 4px; /* Ultra compacto */
+  font-size: 0.85em; /* Reduzido */
 }
 
-/* NOVO: Layout compacto dentro do player-card */
+/* Layout compacto dentro do player-card */
 .equipment-layout-compact {
     display: flex;
     flex-direction: row; 
     flex-wrap: wrap;
-    gap: 8px; /* Espaço entre as colunas/secções */
+    gap: 4px; /* Ultra compacto */
+    margin-top: 4px; 
 }
 
-/* NOVO: Secção de Armas (Primárias + Secundárias) */
+/* Secção de Armas (Primárias + Secundárias) */
 .weapons-group {
-    flex: 2; /* Ocupa mais espaço */
-    min-width: 55%; 
+    flex: 2; 
+    min-width: 58%; /* Aumentado para dar mais espaço às armas */
 }
 
-/* NOVO: Secção de Granadas e Equipamento */
+/* Secção de Granadas e Equipamento */
 .util-equip-group {
-    flex: 1; /* Ocupa menos espaço */
-    min-width: 40%; 
+    flex: 1; 
+    min-width: 38%; /* Reduzido */
 }
 
-/* NOVO: Títulos pequenos para guiar */
+/* Títulos pequenos (Granadas/Equipamento) */
 .weapon-group-title {
-    font-size: 0.8em;
+    font-size: 0.7em; 
     color: #888;
-    margin-bottom: 4px;
+    margin-bottom: 1px; /* Ultra compacto */
+    margin-top: 4px; /* Ultra compacto */
     border-bottom: 1px dashed #2a2f36;
-    padding-bottom: 2px;
+    padding-bottom: 1px;
+    text-align: center;
 }
-/* FIM NOVO CSS DE LAYOUT */
 
-
-/* ALTERADO: Redução do tamanho e espaçamento dos ícones */
+/* Redução do tamanho e espaçamento dos ícones */
 .weapon-grid,
 .grenade-grid,
 .equipment-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px; /* Reduzido de 6px para 4px */
-  margin-bottom: 6px; /* Reduzido de 8px para 6px */
+  gap: 2px; /* Ultra compacto */
+  margin-bottom: 2px; /* Ultra compacto */
   max-width: 100%; 
 }
 
 .weapon-icon {
-  width: 40px; /* Reduzido de 48px para 40px */
-  height: 40px; /* Reduzido de 48px para 40px */
-  border: 2px solid transparent;
-  border-radius: 6px;
+  width: 34px; /* Ultra compacto (de 40px para 34px) */
+  height: 34px; /* Ultra compacto */
+  border: 1px solid transparent; /* Reduzida a borda */
+  border-radius: 4px;
   cursor: pointer;
   transition: border-color 0.2s, transform 0.2s;
   background: #1a1d21;
@@ -102,30 +133,30 @@ h3 {
   flex-shrink: 0; 
 }
 .weapon-icon img {
-  width: 75%; /* Ajustado para ícones menores */
-  height: 75%; /* Ajustado para ícones menores */
+  width: 75%; 
+  height: 75%; 
   object-fit: contain;
   filter: brightness(0.9);
 }
 .weapon-icon:hover {
-  transform: scale(1.1);
+  transform: scale(1.03); 
 }
 .weapon-icon.selected {
   border-color: #00b7ff;
-  box-shadow: 0 0 8px #00b7ff;
+  box-shadow: 0 0 4px #00b7ff; /* Sombra mais subtil */
 }
 
 .actions {
   text-align: center;
-  margin-top: 24px;
+  margin-top: 10px; /* Ultra compacto */
 }
 .actions button {
   background: #00b7ff;
   border: none;
   color: #fff;
-  font-size: 1.1em;
-  padding: 10px 24px;
-  border-radius: 8px;
+  font-size: 1em; 
+  padding: 6px 18px; /* Ultra compacto */
+  border-radius: 6px; 
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -133,27 +164,13 @@ h3 {
   background: #0095d4;
 }
 
-#chart {
-  margin-top: 20px;
-}
-.bar {
-  height: 30px;
-  border-radius: 8px;
-  margin: 6px 0;
-  text-align: center;
-  color: #fff;
-  line-height: 30px;
-}
-.bar.ct {
-  background: #007bff;
-}
-.bar.t {
-  background: #ff4d00;
-}
-
 .result {
   background: #181b1f;
-  padding: 16px;
+  padding: 10px; 
   border-radius: 12px;
-  margin-top: 24px;
+  margin-top: 10px;
+}
+#raw-result {
+    font-size: 0.75em;
+    overflow-x: auto;
 }

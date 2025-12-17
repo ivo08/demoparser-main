@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{% static 'predictor/styles.css' %}" />
     <script>
       const WEAPON_MAP = {{ weapon_map_json|safe }};
+      const TEAM_PRESETS = {{ all_players_json|safe }};
     </script>
     <script src="{% static 'predictor/dashboard.js' %}"></script>
   </head>
@@ -15,7 +16,25 @@
     <main class="container">
       <h1>Round Predictor</h1>
 
-      <form id="predict-form">
+      <section class="team-selector-controls">
+        <h3>Carregar Preset de Jogadores</h3>
+        <div class="team-selectors">
+          <select id="ct-team-select">
+            <option value="">CT: Selecionar Equipa</option>
+            {% for key, value in all_players_json.items %}
+            <option value="{{ key }}">{{ key }}</option>
+            {% endfor %}
+          </select>
+          <select id="t-team-select">
+            <option value="">T: Selecionar Equipa</option>
+            {% for key, value in all_players_json.items %}
+            <option value="{{ key }}">{{ key }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      </section>
+      
+      <form id="predict-form" action="{% url 'api_predict' %}" method="post">
         <section class="teams">
           <div class="team">
             <h2>Team CT</h2>
@@ -32,7 +51,6 @@
                 <div class="equipment-layout-compact">
                   
                   <div class="weapons-group">
-                    <h4 class="weapon-group-title">Primárias</h4>
                     <div class="weapon-grid primary">
                       {% for w in primary_options %}
                       <div
@@ -47,7 +65,6 @@
                       {% endfor %}
                     </div>
 
-                    <h4 class="weapon-group-title">Secundárias</h4>
                     <div class="weapon-grid secondary">
                       {% for w in secondary_options %}
                       <div
@@ -137,7 +154,6 @@
                 <div class="equipment-layout-compact">
                   
                   <div class="weapons-group">
-                    <h4 class="weapon-group-title">Primárias</h4>
                     <div class="weapon-grid primary">
                       {% for w in primary_options %}
                       <div
@@ -152,7 +168,6 @@
                       {% endfor %}
                     </div>
 
-                    <h4 class="weapon-group-title">Secundárias</h4>
                     <div class="weapon-grid secondary">
                       {% for w in secondary_options %}
                       <div
@@ -229,7 +244,7 @@
         </section>
 
         <div class="actions">
-          <button type="submit">Predict</button>
+            <button type="submit">Predict</button>
         </div>
       </form>
 

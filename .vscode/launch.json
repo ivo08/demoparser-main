@@ -1,18 +1,16 @@
 {
-    // Use IntelliSense to learn about possible attributes.
-    // Hover to view descriptions of existing attributes.
-    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        // CONFIGURAÇÃO 1: PYTHON/DJANGO (MANTÉM-SE)
         {
-            "name": "Python Debugger: Django",
+            "name": "Python: Django",
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/dash_project/manage.py",
-            "args": [
-                "runserver"
-            ],
-            "django": true
+            "args": ["runserver", "--noreload"],
+            "django": true,
+            "justMyCode": true,
+            "console": "integratedTerminal"
         }
     ]
 }
