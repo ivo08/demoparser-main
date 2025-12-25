@@ -1,3 +1,9 @@
+###############################################################################
+# Demo downloader
+#
+# This script downloads demos from the matches found in recent_matches.json
+###############################################################################
+
 import pycurl
 from fake_useragent import UserAgent
 from io import BytesIO
@@ -63,8 +69,16 @@ class DemoDownloader:
     @classmethod
     def is_demo_already_downloaded(cls, filepath):
         try:
-            file_path = os.path.join(cls.DOWNLOAD_FOLDER, f"{filepath.split('/')[-1]}.dem")
-            return os.path.exists(file_path) and os.path.getsize(file_path) > 0
+            file_path_dem = os.path.join(cls.DOWNLOAD_FOLDER, f"{filepath.split('/')[-1]}.dem")
+            file_path_rar = os.path.join(cls.DOWNLOAD_FOLDER, f"{filepath.split('/')[-1]}.rar")
+            folder_path = os.path.join(cls.DOWNLOAD_FOLDER, f"{filepath.split('/')[-1]}")
+            if os.path.exists(file_path_dem) and os.path.getsize(file_path_dem) > 0:
+                return True
+            elif os.path.exists(file_path_rar) and os.path.getsize(file_path_rar) > 0:
+                return True
+            elif os.path.exists(folder_path) and os.path.isdir(folder_path):
+                return True
+            return False
         except FileNotFoundError:
             return False
 
@@ -89,7 +103,7 @@ if __name__ == "__main__":
                     print(f"⚠️  Demo already downloaded, skipping: {demo_link}")
                     continue
                 demo_data = downloader.download()
-                filename = os.path.join("demos", demo_link.split("/")[-1] + ".rar")
+                filename = os.path.join(DemoDownloader.DOWNLOAD_FOLDER, f"{demo_link.split('/')[-1]}.rar")
                 with open(filename, "wb") as demo_file:
                     demo_file.write(demo_data)
                 print(f"✅ Demo saved as {filename}.")

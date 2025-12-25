@@ -1,3 +1,9 @@
+###############################################################################
+# Demo link scraper
+#
+# This script scrapes the demo link from the matches found in recent_matches.json
+###############################################################################
+
 import requests
 from bs4 import BeautifulSoup
 import re

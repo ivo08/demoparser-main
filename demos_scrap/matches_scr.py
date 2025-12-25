@@ -1,3 +1,9 @@
+###############################################################################
+# Matches scraper
+#
+# This script scrapes the matches from the team's recent matches page
+###############################################################################
+
 import requests
 from bs4 import BeautifulSoup
 import re
